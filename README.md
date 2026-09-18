@@ -18,6 +18,8 @@ lists. This API is unofficial and can change without notice.
   produce false unfollows.
 - The Instagram session is stored in the database, encrypted with AES-256-GCM, and reused; a new login happens only
   when it expires. If the encryption key changes, the stored session is discarded and a new login is performed.
+- Every detected change is kept as history for 30 days, then deleted by a daily job; the current followers and
+  followed users are never deleted.
 
 ## Configuration
 
@@ -31,9 +33,12 @@ lists. This API is unofficial and can change without notice.
 | `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`)                                                                                                                                 |
 | `SENTRA_SYNC_CRON`                                          | Sync schedule, Spring cron format (default `0 0 18 * * *`, every day at 18:00)                                                                                                                                               |
 | `SENTRA_SYNC_ZONE`                                          | Time zone of the sync schedule (default `Europe/Rome`), independent of the time zone of the server                                                                                                                           |
+| `SENTRA_EVENT_MAX_AGE`                                     | Age after which the events of the change history are deleted (default `30d`) |
+| `SENTRA_RETENTION_CRON`                                     | Schedule of the deletion of old events, in the time zone of `SENTRA_SYNC_ZONE` (default `0 30 3 * * *`, every day at 03:30) |
 | `PORT`                                                      | HTTP port (default `8080`)                                                                                                                                                                                                   |
 
-A local database can be started with `docker compose up -d`. The schema is created and updated at startup by
+A local database for development can be started with `docker compose up -d`: it listens only on `127.0.0.1` and
+uses the development credentials `sentra`/`sentra`, so do not use it in production. The schema is created and updated at startup by
 Liquibase, from the changelog in `src/main/resources/db/changelog`.
 
 ## API

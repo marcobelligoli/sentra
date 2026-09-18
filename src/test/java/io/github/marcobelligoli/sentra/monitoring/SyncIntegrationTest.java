@@ -13,6 +13,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.verify;
         "sentra.accounts[0].instagram-password=secret",
         "sentra.accounts[0].api-password=mario-api-password",
         "sentra.sync.cron=-",
+        "sentra.retention.cron=-",
         "sentra.sync.min-delay=0s",
         "sentra.sync.max-delay=0s",
         "sentra.session-key=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="})
@@ -125,6 +127,19 @@ class SyncIntegrationTest {
         MonitoredAccount account = accounts.findByUsername("mario").orElseThrow();
         assertThat(connections.findByAccountAndDirection(account, Direction.FOLLOWER)).hasSize(2);
         verify(notifier, never()).notifyUnfollowers(any(), any());
+    }
+
+    @Test
+    void deletesOnlyEventsOlderThanTheThreshold() {
+        MonitoredAccount account = accounts.save(new MonitoredAccount("mario"));
+        Instant threshold = Instant.parse("2026-08-18T00:00:00Z");
+        events.saveAll(List.of(
+                new ConnectionEvent(account, Direction.FOLLOWER, Type.REMOVED, ANNA, threshold.minusSeconds(1)),
+                new ConnectionEvent(account, Direction.FOLLOWER, Type.ADDED, BRUNO, threshold),
+                new ConnectionEvent(account, Direction.FOLLOWING, Type.ADDED, CARLA, threshold.plusSeconds(1))));
+
+        assertThat(events.deleteOccurredBefore(threshold)).isEqualTo(1);
+        assertThat(events.findAll()).extracting(ConnectionEvent::getUsername).containsExactlyInAnyOrder("bruno", "carla");
     }
 
     private static SocialGraph graph(Set<InstagramUser> followers, Set<InstagramUser> followings) {

@@ -31,6 +31,7 @@ public final class TestProperties {
                 .toList();
         return new SentraProperties(configured,
                 new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95, Duration.ofHours(1)),
+                new SentraProperties.Retention(Duration.ofDays(30)),
                 new SentraProperties.Security(5, Duration.ofMinutes(15)), new SentraProperties.Telegram(null, null),
                 sessionKey);
     }

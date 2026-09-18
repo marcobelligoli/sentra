@@ -3,6 +3,7 @@ package io.github.marcobelligoli.sentra.config;
 import io.github.marcobelligoli.sentra.instagram.InstagramCredentials;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.time.DurationMin;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ public record SentraProperties(
                 + "SENTRA_ACCOUNTS_0_INSTAGRAM_PASSWORD, SENTRA_ACCOUNTS_0_API_PASSWORD)")
         List<@Valid Account> accounts,
         @Valid @NotNull Sync sync,
+        @Valid @NotNull Retention retention,
         @Valid @NotNull Security security,
         @NotNull Telegram telegram,
         @NotBlank(message = "configure SENTRA_SESSION_KEY, generate one with 'openssl rand -base64 32'")
@@ -75,6 +77,12 @@ public record SentraProperties(
             @NotNull Duration maxDelay,
             @DecimalMin("0.0") @DecimalMax("1.0") double minCompleteness,
             @NotNull Duration minManualInterval) {
+    }
+
+    /**
+     * @param eventMaxAge age after which the events of the change history are deleted
+     */
+    public record Retention(@NotNull @DurationMin(days = 1) Duration eventMaxAge) {
     }
 
     /**

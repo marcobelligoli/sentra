@@ -6,7 +6,8 @@ services:
       POSTGRES_USER: sentra
       POSTGRES_PASSWORD: sentra
     ports:
-      - "5432:5432"
+      # Reachable only from this machine
+      - "127.0.0.1:5432:5432"
     volumes:
       - sentra-data:/var/lib/postgresql/data
 
