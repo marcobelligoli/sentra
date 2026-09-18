@@ -43,17 +43,19 @@ Liquibase, from the changelog in `src/main/resources/db/changelog`.
 
 ## API
 
-Every endpoint uses HTTP Basic Auth with the Instagram username and the API password of a monitored account, and
-works on that account only. The Instagram password is never accepted by the API. Lists reflect the last sync.
+All the paths are under the `/sentra` context path. Every endpoint except the health check uses HTTP Basic Auth
+with the Instagram username and the API password of a monitored account, and works on that account only. The Instagram password is never accepted by the API. Lists reflect the last sync.
 
 After 5 failed logins within 15 minutes, the client address is blocked for 15 minutes (`429 Too Many Requests` with
-`Retry-After`), configurable with `sentra.security.max-failed-logins` and `sentra.security.lockout`.
+`Retry-After`), configurable with `sentra.security.max-failed-logins` and `sentra.security.lockout`. Requests
+without credentials are never blocked.
 
 | Endpoint                         | Description                                                                                    |
 |----------------------------------|------------------------------------------------------------------------------------------------|
-| `GET /api/me/fans`               | Users who follow you but you don't follow back                                                 |
-| `GET /api/me/not-following-back` | Users you follow who don't follow you back                                                     |
-| `POST /api/me/sync`              | Starts a sync of your account in the background: `202` if started, `409` if a sync is already running, `429` with `Retry-After` and `retryAt` if the last sync of the account is less than 1 hour old (`sentra.sync.min-manual-interval`) |
+| `GET /sentra/api/me/fans`        | Users who follow you but you don't follow back                                                 |
+| `GET /sentra/api/me/not-following-back` | Users you follow who don't follow you back                                                     |
+| `POST /sentra/api/me/sync`       | Starts a sync of your account in the background: `202` if started, `409` if a sync is already running, `429` with `Retry-After` and `retryAt` if the last sync of the account is less than 1 hour old (`sentra.sync.min-manual-interval`) |
+| `GET /sentra/actuator/health`  | Public, no authentication: `200 {"status":"UP"}`, or `503 {"status":"DOWN"}` if the database is unreachable. Use it as health check of the hosting service |
 
 Basic Auth sends the password in every request: expose the API only over HTTPS.
 

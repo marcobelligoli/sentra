@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Rejects requests from blocked addresses before authentication, and records the outcome of each Basic Auth login.
+ * Rejects Basic Auth requests from blocked addresses before authentication, and records the outcome of each login.
  * Registered only in the security filter chain, not as a servlet filter.
  */
 class LoginAttemptFilter extends OncePerRequestFilter {
@@ -32,6 +32,13 @@ class LoginAttemptFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        // Requests without credentials cannot guess passwords: they are never blocked (e.g. the health check)
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorization == null || !authorization.regionMatches(true, 0, "Basic ", 0, 6)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // Behind the hosting proxy this is the client address taken from X-Forwarded-For
         String address = request.getRemoteAddr();
         Optional<Duration> blocked = limiter.blockedFor(address);
@@ -46,10 +53,6 @@ class LoginAttemptFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
 
-        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authorization == null || !authorization.regionMatches(true, 0, "Basic ", 0, 6)) {
-            return;
-        }
         if (response.getStatus() == HttpStatus.UNAUTHORIZED.value()) {
             if (limiter.failed(address)) {
                 log.warn("Too many failed logins from {}: address blocked", address);

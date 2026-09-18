@@ -3,6 +3,7 @@ package io.github.marcobelligoli.sentra.api;
 import io.github.marcobelligoli.sentra.config.SentraProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,7 +25,10 @@ class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, LoginAttemptLimiter loginAttemptLimiter) {
-        return http.authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+        return http.authorizeHttpRequests(requests -> requests
+                        // Used by the hosting service to check the application: exposes only UP or DOWN
+                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new LoginAttemptFilter(loginAttemptLimiter), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

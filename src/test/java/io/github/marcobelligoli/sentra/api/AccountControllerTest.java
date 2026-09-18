@@ -157,6 +157,8 @@ class AccountControllerTest {
         mvc.perform(get("/api/me/fans").with(httpBasic("luigi", "luigi-api-password")).with(from("10.0.0.3")))
                 .andExpect(status().isTooManyRequests())
                 .andExpect(header().exists("Retry-After"));
+        // Requests without credentials are not blocked, they just need to authenticate
+        mvc.perform(get("/api/me/fans").with(from("10.0.0.3"))).andExpect(status().isUnauthorized());
         // Other addresses are not affected
         given(accounts.findByUsername("luigi")).willReturn(Optional.empty());
         mvc.perform(get("/api/me/fans").with(httpBasic("luigi", "luigi-api-password")).with(from("10.0.0.4")))
