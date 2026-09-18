@@ -38,7 +38,7 @@ public class SyncRunner {
         this.accounts = properties.accounts();
     }
 
-    @Scheduled(cron = "${sentra.sync.cron}")
+    @Scheduled(cron = "${sentra.sync.cron}", zone = "${sentra.sync.zone}")
     public void syncAll() {
         if (!running.compareAndSet(false, true)) {
             log.warn("Scheduled sync skipped: another sync is running");

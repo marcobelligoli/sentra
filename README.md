@@ -28,6 +28,8 @@ lists. This API is unofficial and can change without notice.
 | `SENTRA_TELEGRAM_BOT_TOKEN`, `SENTRA_TELEGRAM_CHAT_ID`      | Telegram bot and chat receiving notifications; if missing, notifications are only logged                                                                                                                                     |
 | `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`)                                                                                                                                 |
 | `SENTRA_SYNC_CRON`                                          | Sync schedule, Spring cron format (default `0 0 18 * * *`, every day at 18:00)                                                                                                                                               |
+| `SENTRA_SYNC_ZONE`                                          | Time zone of the sync schedule (default `Europe/Rome`), independent of the time zone of the server                                                                                                                           |
+| `PORT`                                                      | HTTP port (default `8080`)                                                                                                                                                                                                   |
 
 A local database can be started with `docker compose up -d`. The schema is created and updated at startup by
 Liquibase, from the changelog in `src/main/resources/db/changelog`.
@@ -44,3 +46,16 @@ only. Lists reflect the last sync.
 | `POST /api/me/sync`              | Starts a sync of your account in the background (`202`, or `409` if a sync is already running) |
 
 Basic Auth sends the password in every request: expose the API only over HTTPS.
+
+## Deployment
+
+The `Dockerfile` builds the application and produces a layered image running as a non-root user on port 8080:
+
+```shell
+docker build -t sentra .
+docker run -p 8080:8080 --env-file sentra.env sentra
+```
+
+Tests are skipped in the image build because they need Docker: run `./mvnw test` before building. On a hosting service,
+let the service terminate HTTPS and make sure the plain HTTP port of the container is not publicly reachable. The
+application trusts the `X-Forwarded-*` headers of the proxy.
