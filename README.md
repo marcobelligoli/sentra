@@ -3,9 +3,13 @@ A Spring Boot-based Instagram follower monitoring tool that detects follower cha
 
 ## How it works
 
-Once a day (and on demand) sentra downloads followers and followed users of each monitored account through
-[instagram4j](https://github.com/instagram4j/instagram4j), stores them in PostgreSQL and compares them with the
-previous sync. Users who stopped following an account are notified on Telegram.
+Once a day (and on demand) sentra downloads followers and followed users of each monitored account through the
+private web API of instagram.com, stores them in PostgreSQL and compares them with the previous sync. Users who stopped
+following an account are notified on Telegram.
+
+The Instagram client (`instagram.web` package) is implemented with the JDK HTTP client, without third-party Instagram
+libraries, and uses four calls: login page (CSRF token), login, profile info and the paginated followers/following
+lists. This API is unofficial and can change without notice.
 
 - The first sync of an account only records the current state and sends no notifications.
 - Users are matched by their Instagram id, so a username change is not reported as an unfollow.

@@ -1,4 +1,4 @@
-package io.github.marcobelligoli.sentra.instagram.instagram4j;
+package io.github.marcobelligoli.sentra.instagram.web;
 
 import java.time.Instant;
 

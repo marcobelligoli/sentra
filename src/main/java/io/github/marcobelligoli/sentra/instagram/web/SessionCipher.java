@@ -1,4 +1,4 @@
-package io.github.marcobelligoli.sentra.instagram.instagram4j;
+package io.github.marcobelligoli.sentra.instagram.web;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
