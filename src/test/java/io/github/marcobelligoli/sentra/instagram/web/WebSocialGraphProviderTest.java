@@ -1,6 +1,7 @@
 package io.github.marcobelligoli.sentra.instagram.web;
 
 import io.github.marcobelligoli.sentra.config.SentraProperties;
+import io.github.marcobelligoli.sentra.config.TestProperties;
 import io.github.marcobelligoli.sentra.instagram.InstagramCredentials;
 import io.github.marcobelligoli.sentra.instagram.InstagramFetchException;
 import io.github.marcobelligoli.sentra.instagram.InstagramUser;
@@ -32,9 +33,7 @@ class WebSocialGraphProviderTest {
     private static final String FOLLOWERS = "/api/v1/friendships/123/followers/?count=50";
     private static final String FOLLOWING = "/api/v1/friendships/123/following/?count=50";
 
-    private final SentraProperties properties = new SentraProperties(List.of(MARIO),
-            new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95), new SentraProperties.Telegram(null, null),
-            Base64.getEncoder().encodeToString(new byte[32]));
+    private final SentraProperties properties = TestProperties.withAccounts(MARIO);
     private final SessionCipher cipher = new SessionCipher(properties);
     private final InstagramSessionRepository sessions = mock(InstagramSessionRepository.class);
 

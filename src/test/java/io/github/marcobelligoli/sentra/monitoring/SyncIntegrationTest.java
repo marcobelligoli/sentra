@@ -24,7 +24,8 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = {
         "sentra.accounts[0].username=mario",
-        "sentra.accounts[0].password=secret",
+        "sentra.accounts[0].instagram-password=secret",
+        "sentra.accounts[0].api-password=mario-api-password",
         "sentra.sync.cron=-",
         "sentra.sync.min-delay=0s",
         "sentra.sync.max-delay=0s",

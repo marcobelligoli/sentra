@@ -1,6 +1,7 @@
 package io.github.marcobelligoli.sentra.monitoring;
 
 import io.github.marcobelligoli.sentra.config.SentraProperties;
+import io.github.marcobelligoli.sentra.config.TestProperties;
 import io.github.marcobelligoli.sentra.instagram.InstagramCredentials;
 import io.github.marcobelligoli.sentra.instagram.InstagramFetchException;
 import io.github.marcobelligoli.sentra.notification.NotificationException;
@@ -25,8 +26,7 @@ class SyncRunnerTest {
 
     private final SyncService syncService = mock(SyncService.class);
     private final Notifier notifier = mock(Notifier.class);
-    private final SentraProperties properties = new SentraProperties(List.of(MARIO, LUIGI),
-            new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95), new SentraProperties.Telegram(null, null), "unused");
+    private final SentraProperties properties = TestProperties.withAccounts(MARIO, LUIGI);
     private final SyncRunner runner = new SyncRunner(syncService, notifier, new Pacer(properties),
             new SyncTaskExecutor(), properties);
 

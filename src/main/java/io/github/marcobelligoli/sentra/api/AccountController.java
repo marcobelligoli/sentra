@@ -58,6 +58,7 @@ class AccountController {
     @PostMapping("/sync")
     ResponseEntity<SyncResponse> sync(Principal principal) {
         InstagramCredentials account = properties.account(principal.getName())
+                .map(SentraProperties.Account::instagramCredentials)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
         if (!syncRunner.trigger(account)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "A sync is already running");

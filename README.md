@@ -23,7 +23,9 @@ lists. This API is unofficial and can change without notice.
 
 | Environment variable                                        | Description                                                                                                                                                                                                                  |
 |-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `SENTRA_ACCOUNTS_0_USERNAME`, `SENTRA_ACCOUNTS_0_PASSWORD`  | First monitored account (`_1_` for the second, and so on)                                                                                                                                                                    |
+| `SENTRA_ACCOUNTS_0_USERNAME`                                | Instagram username of the first monitored account (`_1_` for the second, and so on), also its API username |
+| `SENTRA_ACCOUNTS_0_INSTAGRAM_PASSWORD`                      | Instagram password, used only to log in to Instagram |
+| `SENTRA_ACCOUNTS_0_API_PASSWORD`                            | Basic Auth password of the API: at least 16 characters, different from the Instagram password, generate it with `openssl rand -base64 24` |
 | `SENTRA_SESSION_KEY`                                        | Required. Base64 32-byte key encrypting the stored Instagram session, generate it with `openssl rand -base64 32` or, in PowerShell, `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))` |
 | `SENTRA_TELEGRAM_BOT_TOKEN`, `SENTRA_TELEGRAM_CHAT_ID`      | Telegram bot and chat receiving notifications; if missing, notifications are only logged                                                                                                                                     |
 | `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`)                                                                                                                                 |
@@ -36,8 +38,11 @@ Liquibase, from the changelog in `src/main/resources/db/changelog`.
 
 ## API
 
-Every endpoint uses HTTP Basic Auth with the Instagram credentials of a monitored account and works on that account
-only. Lists reflect the last sync.
+Every endpoint uses HTTP Basic Auth with the Instagram username and the API password of a monitored account, and
+works on that account only. The Instagram password is never accepted by the API. Lists reflect the last sync.
+
+After 5 failed logins within 15 minutes, the client address is blocked for 15 minutes (`429 Too Many Requests` with
+`Retry-After`), configurable with `sentra.security.max-failed-logins` and `sentra.security.lockout`.
 
 | Endpoint                         | Description                                                                                    |
 |----------------------------------|------------------------------------------------------------------------------------------------|

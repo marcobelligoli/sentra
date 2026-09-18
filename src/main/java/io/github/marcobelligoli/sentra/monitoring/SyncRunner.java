@@ -35,7 +35,7 @@ public class SyncRunner {
         this.notifier = notifier;
         this.pacer = pacer;
         this.executor = executor;
-        this.accounts = properties.accounts();
+        this.accounts = properties.accounts().stream().map(SentraProperties.Account::instagramCredentials).toList();
     }
 
     @Scheduled(cron = "${sentra.sync.cron}", zone = "${sentra.sync.zone}")

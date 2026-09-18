@@ -1,6 +1,7 @@
 package io.github.marcobelligoli.sentra.instagram.web;
 
 import io.github.marcobelligoli.sentra.config.SentraProperties;
+import io.github.marcobelligoli.sentra.config.TestProperties;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -57,9 +58,7 @@ class SessionCipherTest {
     }
 
     private static SessionCipher cipher(String key) {
-        return new SessionCipher(new SentraProperties(List.of(),
-                new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95), new SentraProperties.Telegram(null, null),
-                key));
+        return new SessionCipher(TestProperties.withSessionKey(key));
     }
 
 }
