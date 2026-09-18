@@ -1,12 +1,9 @@
 package io.github.marcobelligoli.sentra.instagram.web;
 
-import io.github.marcobelligoli.sentra.config.SentraProperties;
 import io.github.marcobelligoli.sentra.config.TestProperties;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.Base64;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
