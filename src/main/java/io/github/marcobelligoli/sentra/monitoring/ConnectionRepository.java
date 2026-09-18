@@ -7,11 +7,21 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
+	/**
+	 * Finds the connections of an account as of its last sync.
+	 * @param account the monitored account
+	 * @param direction {@code FOLLOWER} for its followers, {@code FOLLOWING} for the users it follows
+	 * @return the connections, in no particular order
+	 */
 	List<Connection> findByAccountAndDirection(MonitoredAccount account, Direction direction);
 
 	/**
-	 * Connections in {@code direction} with no counterpart in the opposite direction: for {@code FOLLOWER} the users
-	 * the account does not follow back, for {@code FOLLOWING} the users who do not follow the account back.
+	 * Finds the connections in {@code direction} with no counterpart in the opposite direction: for
+	 * {@code FOLLOWER} the users the account does not follow back, for {@code FOLLOWING} the users who do not follow
+	 * the account back.
+	 * @param account the monitored account
+	 * @param direction direction of the connections to return
+	 * @return the one-way connections, ordered by username
 	 */
 	@Query("""
 			select c from Connection c
