@@ -24,7 +24,8 @@ previous sync. Users who stopped following an account are notified on Telegram.
 | `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`) |
 | `SENTRA_SYNC_CRON` | Sync schedule, Spring cron format (default `0 0 18 * * *`, every day at 18:00) |
 
-A local database can be started with `docker compose up -d`.
+A local database can be started with `docker compose up -d`. The schema is created and updated at startup by
+Liquibase, from the changelog in `src/main/resources/db/changelog`.
 
 ## API
 
