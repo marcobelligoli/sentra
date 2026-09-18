@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class SentraApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SentraApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SentraApplication.class, args);
+    }
 
 }

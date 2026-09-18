@@ -1,4 +1,5 @@
 # sentra
+
 A Spring Boot-based Instagram follower monitoring tool that detects follower changes and sends notifications.
 
 ## How it works
@@ -20,13 +21,13 @@ lists. This API is unofficial and can change without notice.
 
 ## Configuration
 
-| Environment variable | Description |
-|---|---|
-| `SENTRA_ACCOUNTS_0_USERNAME`, `SENTRA_ACCOUNTS_0_PASSWORD` | First monitored account (`_1_` for the second, and so on) |
-| `SENTRA_SESSION_KEY` | Required. Base64 32-byte key encrypting the stored Instagram session, generate it with `openssl rand -base64 32` or, in PowerShell, `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))` |
-| `SENTRA_TELEGRAM_BOT_TOKEN`, `SENTRA_TELEGRAM_CHAT_ID` | Telegram bot and chat receiving notifications; if missing, notifications are only logged |
-| `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`) |
-| `SENTRA_SYNC_CRON` | Sync schedule, Spring cron format (default `0 0 18 * * *`, every day at 18:00) |
+| Environment variable                                        | Description                                                                                                                                                                                                                  |
+|-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SENTRA_ACCOUNTS_0_USERNAME`, `SENTRA_ACCOUNTS_0_PASSWORD`  | First monitored account (`_1_` for the second, and so on)                                                                                                                                                                    |
+| `SENTRA_SESSION_KEY`                                        | Required. Base64 32-byte key encrypting the stored Instagram session, generate it with `openssl rand -base64 32` or, in PowerShell, `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))` |
+| `SENTRA_TELEGRAM_BOT_TOKEN`, `SENTRA_TELEGRAM_CHAT_ID`      | Telegram bot and chat receiving notifications; if missing, notifications are only logged                                                                                                                                     |
+| `SENTRA_DB_URL`, `SENTRA_DB_USERNAME`, `SENTRA_DB_PASSWORD` | PostgreSQL connection (default `jdbc:postgresql://localhost:5432/sentra`, `sentra`/`sentra`)                                                                                                                                 |
+| `SENTRA_SYNC_CRON`                                          | Sync schedule, Spring cron format (default `0 0 18 * * *`, every day at 18:00)                                                                                                                                               |
 
 A local database can be started with `docker compose up -d`. The schema is created and updated at startup by
 Liquibase, from the changelog in `src/main/resources/db/changelog`.
@@ -36,10 +37,10 @@ Liquibase, from the changelog in `src/main/resources/db/changelog`.
 Every endpoint uses HTTP Basic Auth with the Instagram credentials of a monitored account and works on that account
 only. Lists reflect the last sync.
 
-| Endpoint | Description |
-|---|---|
-| `GET /api/me/fans` | Users who follow you but you don't follow back |
-| `GET /api/me/not-following-back` | Users you follow who don't follow you back |
-| `POST /api/me/sync` | Starts a sync of your account in the background (`202`, or `409` if a sync is already running) |
+| Endpoint                         | Description                                                                                    |
+|----------------------------------|------------------------------------------------------------------------------------------------|
+| `GET /api/me/fans`               | Users who follow you but you don't follow back                                                 |
+| `GET /api/me/not-following-back` | Users you follow who don't follow you back                                                     |
+| `POST /api/me/sync`              | Starts a sync of your account in the background (`202`, or `409` if a sync is already running) |
 
 Basic Auth sends the password in every request: expose the API only over HTTPS.

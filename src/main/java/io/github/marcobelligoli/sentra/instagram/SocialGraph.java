@@ -7,8 +7,8 @@ import java.util.Set;
  * detect incomplete fetches.
  */
 public record SocialGraph(
-		Set<InstagramUser> followers,
-		Set<InstagramUser> followings,
-		int declaredFollowers,
-		int declaredFollowings) {
+        Set<InstagramUser> followers,
+        Set<InstagramUser> followings,
+        int declaredFollowers,
+        int declaredFollowings) {
 }
