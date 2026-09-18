@@ -13,9 +13,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -106,7 +109,7 @@ class AccountControllerTest {
 
     @Test
     void triggersSyncWithTheInstagramCredentialsOfTheAuthenticatedAccount() throws Exception {
-        given(syncRunner.trigger(any())).willReturn(true);
+        given(syncRunner.trigger(any())).willReturn(new SyncRunner.TriggerResult.Started());
 
         mvc.perform(post("/api/me/sync").with(httpBasic("luigi", "luigi-api-password")))
                 .andExpect(status().isAccepted());
@@ -116,10 +119,31 @@ class AccountControllerTest {
 
     @Test
     void conflictWhenASyncIsRunning() throws Exception {
-        given(syncRunner.trigger(any())).willReturn(false);
+        given(syncRunner.trigger(any())).willReturn(new SyncRunner.TriggerResult.AlreadyRunning());
 
         mvc.perform(post("/api/me/sync").with(httpBasic("luigi", "luigi-api-password")))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void tooManyRequestsWhenTheLastSyncIsTooRecent() throws Exception {
+        Instant retryAt = Instant.now().plus(Duration.ofMinutes(40));
+        given(syncRunner.trigger(any())).willReturn(new SyncRunner.TriggerResult.TooSoon(retryAt));
+
+        mvc.perform(post("/api/me/sync").with(httpBasic("luigi", "luigi-api-password")))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Retry-After", matchesPattern("2[34]\\d\\d")))
+                .andExpect(jsonPath("$.status").value("too-soon"))
+                .andExpect(jsonPath("$.retryAt").value(retryAt.toString()));
+    }
+
+    @Test
+    void startedResponseHasNoRetryTime() throws Exception {
+        given(syncRunner.trigger(any())).willReturn(new SyncRunner.TriggerResult.Started());
+
+        mvc.perform(post("/api/me/sync").with(httpBasic("luigi", "luigi-api-password")))
+                .andExpect(jsonPath("$.status").value("started"))
+                .andExpect(jsonPath("$.retryAt").doesNotExist());
     }
 
     @Test

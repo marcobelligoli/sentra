@@ -1,13 +1,10 @@
 package io.github.marcobelligoli.sentra.api;
 
+import io.github.marcobelligoli.sentra.MutableClock;
 import io.github.marcobelligoli.sentra.config.TestProperties;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,31 +61,6 @@ class LoginAttemptLimiterTest {
 
         assertThat(limiter.blockedFor("1.2.3.4")).isPresent();
         assertThat(limiter.blockedFor("5.6.7.8")).isEmpty();
-    }
-
-    private static final class MutableClock extends Clock {
-
-        private Instant now = Instant.parse("2026-09-18T10:00:00Z");
-
-        void advance(Duration duration) {
-            now = now.plus(duration);
-        }
-
-        @Override
-        public Instant instant() {
-            return now;
-        }
-
-        @Override
-        public ZoneId getZone() {
-            return ZoneOffset.UTC;
-        }
-
-        @Override
-        public Clock withZone(ZoneId zone) {
-            return this;
-        }
-
     }
 
 }

@@ -64,10 +64,17 @@ public record SentraProperties(
 
     }
 
+    /**
+     * @param minDelay          minimum random pause between Instagram requests
+     * @param maxDelay          maximum random pause between Instagram requests
+     * @param minCompleteness   share of the profile counters below which a fetch is considered incomplete
+     * @param minManualInterval minimum time between the last sync of an account and a manual sync of it
+     */
     public record Sync(
             @NotNull Duration minDelay,
             @NotNull Duration maxDelay,
-            @DecimalMin("0.0") @DecimalMax("1.0") double minCompleteness) {
+            @DecimalMin("0.0") @DecimalMax("1.0") double minCompleteness,
+            @NotNull Duration minManualInterval) {
     }
 
     /**

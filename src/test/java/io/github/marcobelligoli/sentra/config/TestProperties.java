@@ -29,7 +29,8 @@ public final class TestProperties {
         List<SentraProperties.Account> configured = Arrays.stream(accounts)
                 .map(a -> new SentraProperties.Account(a.username(), a.password(), "api-password-of-" + a.username()))
                 .toList();
-        return new SentraProperties(configured, new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95),
+        return new SentraProperties(configured,
+                new SentraProperties.Sync(Duration.ZERO, Duration.ZERO, 0.95, Duration.ofHours(1)),
                 new SentraProperties.Security(5, Duration.ofMinutes(15)), new SentraProperties.Telegram(null, null),
                 sessionKey);
     }

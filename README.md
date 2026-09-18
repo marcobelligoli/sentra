@@ -48,7 +48,7 @@ After 5 failed logins within 15 minutes, the client address is blocked for 15 mi
 |----------------------------------|------------------------------------------------------------------------------------------------|
 | `GET /api/me/fans`               | Users who follow you but you don't follow back                                                 |
 | `GET /api/me/not-following-back` | Users you follow who don't follow you back                                                     |
-| `POST /api/me/sync`              | Starts a sync of your account in the background (`202`, or `409` if a sync is already running) |
+| `POST /api/me/sync`              | Starts a sync of your account in the background: `202` if started, `409` if a sync is already running, `429` with `Retry-After` and `retryAt` if the last sync of the account is less than 1 hour old (`sentra.sync.min-manual-interval`) |
 
 Basic Auth sends the password in every request: expose the API only over HTTPS.
 
