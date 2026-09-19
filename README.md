@@ -8,9 +8,9 @@ Once a day (and on demand) sentra downloads followers and followed users of each
 private web API of instagram.com, stores them in PostgreSQL and compares them with the previous sync. Users who stopped
 following an account are notified on Telegram.
 
-The Instagram client (`instagram.web` package) is implemented with the JDK HTTP client, without third-party Instagram
-libraries, and uses four calls: login page (CSRF token), login, profile info and the paginated followers/following
-lists. This API is unofficial and can change without notice.
+The Instagram client (`client.instagram.web` package) is implemented with the JDK HTTP client, without third-party
+Instagram libraries, and uses four calls: login page (CSRF token), login, profile info and the paginated
+followers/following lists. This API is unofficial and can change without notice.
 
 - The first sync of an account only records the current state and sends no notifications.
 - Users are matched by their Instagram id, so a username change is not reported as an unfollow.
@@ -20,6 +20,23 @@ lists. This API is unofficial and can change without notice.
   when it expires. If the encryption key changes, the stored session is discarded and a new login is performed.
 - Every detected change is kept as history for 30 days, then deleted by a daily job; the current followers and
   followed users are never deleted.
+
+## Project structure
+
+The code follows the Controller - Service - Repository layering, one package per layer under
+`io.github.marcobelligoli.sentra`:
+
+| Package      | Content                                                                                                 |
+|--------------|---------------------------------------------------------------------------------------------------------|
+| `controller` | REST endpoints: only HTTP concerns, they delegate to the services                                       |
+| `service`    | Business logic: account queries, sync of an account, scheduling of the syncs, retention                 |
+| `repository` | Spring Data JPA repositories                                                                            |
+| `entity`     | JPA entities                                                                                            |
+| `dto`        | Response bodies of the API                                                                              |
+| `exception`  | Exceptions thrown by the services, mapped to HTTP statuses                                              |
+| `client`     | Integrations with external systems: Instagram (`client.instagram`) and Telegram (`client.notification`) |
+| `security`   | Basic Auth and blocking of addresses with too many failed logins                                        |
+| `config`     | Configuration properties                                                                                |
 
 ## Configuration
 

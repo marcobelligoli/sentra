@@ -1,6 +1,6 @@
 package io.github.marcobelligoli.sentra.config;
 
-import io.github.marcobelligoli.sentra.instagram.InstagramCredentials;
+import io.github.marcobelligoli.sentra.client.instagram.InstagramCredentials;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.time.DurationMin;
